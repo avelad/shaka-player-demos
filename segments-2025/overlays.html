@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Overlays Demo</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: black;
+      }
+      #video-container {
+        width: 100vw;
+        width: 100dvw;
+        height: 100vh;
+        height: 100dvh;
+      }
+      #video {
+        width:100%;
+      }
+    </style>
+    <link rel="stylesheet" href="https://shaka-project.github.io/shaka-player/dist/controls.css">
+    <script src="https://shaka-project.github.io/shaka-player/dist/shaka-player.ui.js"></script>
+    <script>
+      async function initPlayer() {
+        shaka.polyfill.installAll();
+        if (!shaka.Player.isBrowserSupported()) {
+          alert('Browser not supported!');
+          return;
+        }
+        const videoContainer = document.getElementById('video-container');
+        const video = document.getElementById('video');
+        const localPlayer = new shaka.Player();
+        localPlayer.attach(video);
+        const ui = new shaka.ui.Overlay(localPlayer, videoContainer, video);
+        ui.configure({
+          customContextMenu: true,
+          enableKeyboardPlaybackControlsInWindow: true,
+        });
+        const controls = ui.getControls();
+        const player = controls.getPlayer();
+        const languages = navigator.languages || ['en-us'];
+        player.configure({
+          manifest: {
+            dash:{
+              clockSyncUri: 'https://time.akamai.com/?ms&iso',
+            },
+          },
+          streaming: {
+            bufferingGoal: 30,
+            bufferBehind: 30,
+            lowLatencyMode: true,
+            minTimeBetweenRecoveries: 1,
+          },
+          preferredAudioLanguage: languages[0],
+          preferredTextLanguage: languages[0],
+        });
+        const url = new URL('./overlay.mpd', window.location.href).toString();
+        await player.load(url);
+      }
+      document.addEventListener('DOMContentLoaded', initPlayer)
+    </script>
+  </head>
+  <body>
+    <div id="video-container">
+      <video id="video" autoplay playsinline></video>
+    </div>
+  </body>
+</html>
