@@ -193,4 +193,4 @@ https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths-hls/v-0720p-250
 #EXTINF:0.333,
 https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths-hls/v-0720p-2500k-libx264-s94.mp4
 #EXT-X-ENDLIST
-#EXT-X-DATERANGE:ID="0",CLASS="com.apple.hls.interstitial",CUE="ONCE",START-DATE="2000-01-01T00:00:05Z",X-ASSET-URI="https://2025.demuxed.com/_app/immutable/assets/london-holding.CoJmnPtW.mp4",X-RESTRICT="JUMP",X-RESUME-OFFSET=0.0
+#EXT-X-DATERANGE:ID="0",CLASS="com.apple.hls.interstitial",START-DATE="2000-01-01T00:00:05Z",X-ASSET-URI="https://2025.demuxed.com/_app/immutable/assets/london-holding.CoJmnPtW.mp4",X-RESTRICT="JUMP",X-RESUME-OFFSET=0.0
