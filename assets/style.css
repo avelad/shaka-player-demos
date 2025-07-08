@@ -21,6 +21,11 @@ header .title {
   text-decoration: none;
 }
 
+header .title img {
+  max-width: 275px;
+  height: 100%;
+}
+
 header img {
   height: 50px;
   margin-left: 10px;
