@@ -39,6 +39,9 @@
         });
         const controls = ui.getControls();
         const player = controls.getPlayer();
+        player.addEventListener('error', (event) => {
+          console.error(event);
+        });
         const languages = navigator.languages || ['en-us'];
         player.configure({
           manifest: {
@@ -56,7 +59,11 @@
           preferredTextLanguage: languages[0],
         });
         const url = new URL('./media_insertion.mpd', window.location.href).toString();
-        await player.load(url);
+        try {
+          await player.load(url);
+        } catch (error) {
+          console.error(error);
+        }
       }
       document.addEventListener('DOMContentLoaded', initPlayer)
     </script>
