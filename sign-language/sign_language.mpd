@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MPD file Generated with GPAC version 0.5.1-DEV-rev4736M  on 2013-09-12T08:20:28Z-->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" minBufferTime="PT1.500000S" type="static" mediaPresentationDuration="PT0H9M54.00S" profiles="urn:mpeg:dash:profile:isoff-live:2011,http://dashif.org/guidelines/dash264">
+  <BaseURL>https://dash.akamaized.net/dash264/TestCases/1c/qualcomm/2/MultiRate.mpd</BaseURL>
+  <Period id="" duration="PT0H9M54.00S">
+    <EventStream schemeIdUri="urn:mpeg:dash:event:2012" timescale="1">
+      <Event presentationTime="0" duration="8" id="overlay-1">
+        <OverlayEvent uri="https://storage.googleapis.com/shaka-demo-assets/heliocentrism/heliocentrism.mpd" mimeType="application/dash+xml" earlestResolutionTime="0.0" z="1" profile="start">
+          <Viewport x="1920" y="1080"/>
+          <Overlay>
+            <TopLeft x="1280" y="600"/>
+            <Size x="640" y="480"/>
+          </Overlay>
+        </OverlayEvent>
+      </Event>
+    </EventStream>
+    <AdaptationSet segmentAlignment="true" maxWidth="1280" maxHeight="720" maxFrameRate="24" par="16:9">
+      <Representation id="1" mimeType="video/mp4" codecs="avc1.42c01f" width="1280" height="720" frameRate="24" sar="1:1" startWithSAP="1" bandwidth="1426587">
+        <SegmentTemplate timescale="12288" media="BBB_720_1M_video_$Time$.mp4" initialization="BBB_720_1M_video_init.mp4">
+          <SegmentTimeline>
+            <S d="61440" r="-1" />
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+      <Representation id="2" mimeType="video/mp4" codecs="avc1.42c01f" width="1280" height="720" frameRate="24" sar="1:1" startWithSAP="1" bandwidth="2362505">
+        <SegmentTemplate timescale="12288" media="BBB_720_2M_video_$Time$.mp4" initialization="BBB_720_2M_video_init.mp4">
+          <SegmentTimeline>
+            <S d="61440" r="-1" />
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+      <Representation id="3" mimeType="video/mp4" codecs="avc1.42c01f" width="1280" height="720" frameRate="24" sar="1:1" startWithSAP="1" bandwidth="4488217">
+        <SegmentTemplate timescale="12288" media="BBB_720_4M_video_$Time$.mp4" initialization="BBB_720_4M_video_init.mp4">
+          <SegmentTimeline>
+            <S d="61440" r="-1" />
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet segmentAlignment="true">
+      <Representation id="4" mimeType="audio/mp4" codecs="mp4a.40.29" audioSamplingRate="48000" startWithSAP="1" bandwidth="33028">
+        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2" />
+        <SegmentTemplate timescale="48000" media="BBB_32k_$Time$.mp4" initialization="BBB_32k_init.mp4">
+          <SegmentTimeline>
+            <S d="239616" r="-1" />
+          </SegmentTimeline>
+        </SegmentTemplate>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+</MPD>
