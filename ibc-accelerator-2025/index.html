@@ -28,6 +28,11 @@
         gap: 10px;
       }
 
+      #time {
+        margin-top: 10px;
+        text-align: center;
+      }
+
       @media all and (orientation:portrait) {
         .players {
           flex-direction: column;
@@ -125,7 +130,16 @@
           }
         });
       }
-      document.addEventListener('DOMContentLoaded', init)
+      function updateTime (element) {
+        element.textContent = new Date().toISOString();
+        setTimeout(function () {
+          updateTime(element);
+        }, 10);
+      }
+      document.addEventListener('DOMContentLoaded', () => {
+        init();
+        updateTime(document.getElementById('time'));
+      })
     </script>
   </head>
   <body>
@@ -196,6 +210,7 @@
             <img src="../assets/rte.png" width="70">
             <img src="../assets/yospace.png" width="140">
           </div>
+          <div id="time"></div>
         </footer>
       </div>
     </main>
