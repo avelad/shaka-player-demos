@@ -1,161 +1,140 @@
 <!doctype html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
     <title>IBC Accelerator 2025</title>
-
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
     <script src="https://shaka-project.github.io/shaka-player/dist/shaka-player.ui.js"></script>
     <link rel="stylesheet" href="https://shaka-project.github.io/shaka-player/dist/controls.css">
     <link href="./bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css">
-
     <style>
-        video {
-            width: 100%;
-        }
+      video {
+        width: 100%;
+      }
 
-        .company-logos{
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-            flex-wrap: wrap;
-            flex-direction: row;
-        }
+      .company-logos{
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-wrap: wrap;
+        flex-direction: row;
+      }
 
-        .margin-top-row {
-            margin-top: 10px;
-        }
+      .margin-top-row {
+        margin-top: 10px;
+      }
     </style>
-
     <script class="code">
-        async function init() {
-            shaka.polyfill.installAll();
-            if (!shaka.Player.isBrowserSupported()) {
-                return
-            }
-
-            const video = document.querySelector('#video1');
-            const controlsDiv = document.querySelector('#controls');
-            const localPlayer = new shaka.Player();
-            const ui = new shaka.ui.Overlay(localPlayer, controlsDiv, video);
-            const controls = ui.getControls();
-            const player = controls.getPlayer();
-            ui.configure({
-              customContextMenu: true,
-              // enableKeyboardPlaybackControlsInWindow: true,
-            });
-
-            const languages = navigator.languages || ['en-us'];
-            player.configure({
-              manifest: {
-                dash:{
-                  clockSyncUri: 'https://time.akamai.com/?ms&iso',
-                },
-              },
-              streaming: {
-                bufferingGoal: 30,
-                bufferBehind: 30,
-                minTimeBetweenRecoveries: 1,
-              },
-              preferredAudioLanguage: languages[0],
-              preferredTextLanguage: languages[0],
-            });
-
-            await player.attach(video);
-
-
-            const loadButton = document.getElementById('load-button');
-            const urlSelect = document.getElementById('url-select');
-            const customUrl = document.getElementById('custom-url');
-
-            urlSelect.addEventListener('change', () => {
-                if (urlSelect.value === 'custom') {
-                  customUrl.disabled = false;
-                  customUrl.value = '';
-                } else {
-                    customUrl.value = urlSelect.value;
-                    customUrl.disabled = true;
-                }
-            });
-
-            loadButton.addEventListener('click', async () => {
-                const enteredUrl = customUrl.value.trim();
-                const selectedUrl = urlSelect.value;
-                try {
-                    await player.load(enteredUrl !== '' ? enteredUrl : selectedUrl);
-                    video.play();
-                } catch (error) {
-                    console.error('Error loading asset:', error);
-                }
-            });
-
-            const adManager = player.getAdManager();
-            window.adManager = adManager;
-            const container = video.ui.getControls().getClientSideAdContainer();
-
-            // Check for URL query parameters
-            const queryParams = new URLSearchParams(window.location.search);
-            const urlParam = queryParams.get('url');
-            const autoplayParam = queryParams.has('autoplay');
-
-            if (urlParam) {
-                customUrl.value = urlParam;
-                urlSelect.value = 'custom';
-                customUrl.disabled = false;
-            }
-
-            if (autoplayParam) {
-                loadButton.click();
-            }
+      async function init() {
+        shaka.polyfill.installAll();
+        if (!shaka.Player.isBrowserSupported()) {
+          return;
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            init();
+        const video = document.querySelector('#video1');
+        const controlsDiv = document.querySelector('#controls');
+        const localPlayer = new shaka.Player();
+        const ui = new shaka.ui.Overlay(localPlayer, controlsDiv, video);
+        const controls = ui.getControls();
+        const player = controls.getPlayer();
+        ui.configure({
+          customContextMenu: true,
         });
+
+        const languages = navigator.languages || ['en-us'];
+        player.configure({
+          manifest: {
+            dash:{
+              clockSyncUri: 'https://time.akamai.com/?ms&iso',
+            },
+          },
+          streaming: {
+            bufferingGoal: 30,
+            bufferBehind: 30,
+            minTimeBetweenRecoveries: 1,
+          },
+          preferredAudioLanguage: languages[0],
+          preferredTextLanguage: languages[0],
+        });
+
+        await player.attach(video);
+
+        const loadButton = document.getElementById('load-button');
+        const urlSelect = document.getElementById('url-select');
+        const customUrl = document.getElementById('custom-url');
+
+        urlSelect.addEventListener('change', () => {
+          if (urlSelect.value === 'custom') {
+            customUrl.disabled = false;
+            customUrl.value = '';
+          } else {
+            customUrl.value = urlSelect.value;
+            customUrl.disabled = true;
+          }
+        });
+
+        loadButton.addEventListener('click', async () => {
+            const enteredUrl = customUrl.value.trim();
+          const selectedUrl = urlSelect.value;
+          try {
+            await player.load(enteredUrl !== '' ? enteredUrl : selectedUrl);
+            video.play();
+          } catch (error) {
+            console.error('Error loading asset:', error);
+          }
+        });
+      }
+      document.addEventListener('DOMContentLoaded', init)
     </script>
-</head>
-<body>
-<main>
-    <div class="container py-4">
+  </head>
+  <body>
+    <main>
+      <div class="container py-4">
         <header class="pb-3 mb-4 margin-top-row">
-            <h3><a href="./index.html"><img src="../assets/ibc.png" width="80"></a> <b>Accelerator 2025</b></h3>
+          <h3>
+            <a href="./index.html">
+              <img src="../assets/ibc.png" width="80">
+            </a>
+            <b>Accelerator 2025</b>
+          </h3>
         </header>
         <div class="row margin-top-row">
-            <div class="col-md-12">
-                <div class="h-100 p-5 border rounded-3">
-                    <div class="input-group">
-                        <button id="load-button" type="button" class="btn btn-primary" aria-haspopup="true" aria-expanded="false">Load</button>
-                        <select id="url-select" class="dropdown-toggle">
-                            <option value="custom">Custom</option>
-                            <option value="https://gcdn.reallycloudy.com/live/database/rte/DASH/rte.mpd">RTÉ News L3D-DASH</option>
-                            <option value="https://gcdn.reallycloudy.com/live/database/rte_sport/DASH/rte_sport.mpd">RTÉ Sports L3D-DASH</option>
-                            <option value="https://gcdn.reallycloudy.com/live/database/rte/HLS/rte.m3u8">RTÉ News LL-HLS</option>
-                            <option value="https://gcdn.reallycloudy.com/live/database/rte_sport/HLS/rte_sport.m3u8">RTÉ Sports LL-HLS</option>
-                        </select>
-                        <input id="custom-url" type="text" class="form-control" placeholder="Paste your own URL here" style="margin-left: 8px;">
-                    </div>
-                    <div class="margin-top-row">
-                        <div id="controls">
-                            <video data-shaka-player id="video1" muted></video>
-                        </div>
-                    </div>
+          <div class="col-md-12">
+            <div class="h-100 p-5 border rounded-3">
+              <div class="input-group">
+                <button id="load-button" type="button" class="btn btn-primary" aria-haspopup="true" aria-expanded="false">Load</button>
+                <select id="url-select" class="dropdown-toggle">
+                  <option value="custom">Custom</option>
+                  <option value="https://gcdn.reallycloudy.com/live/database/rte/DASH/rte.mpd">RTÉ News L3D-DASH</option>
+                  <option value="https://gcdn.reallycloudy.com/live/database/rte_sport/DASH/rte_sport.mpd">RTÉ Sports L3D-DASH</option>
+                  <option value="https://gcdn.reallycloudy.com/live/database/rte/HLS/rte.m3u8">RTÉ News LL-HLS</option>
+                  <option value="https://gcdn.reallycloudy.com/live/database/rte_sport/HLS/rte_sport.m3u8">RTÉ Sports LL-HLS</option>
+                </select>
+                <input id="custom-url" type="text" class="form-control" placeholder="Paste your own URL here" style="margin-left: 8px;">
+              </div>
+              <div class="margin-top-row">
+                <div id="controls">
+                  <video data-shaka-player id="video1"></video>
                 </div>
+              </div>
             </div>
+          </div>
         </div>
         <footer class="pt-3 mt-4 text-muted">
-            <div class="company-logos">
-                <img src="../assets/ateme.png" width="100">
-                <img src="../assets/bbc.png" width="100">
-                <img src="../assets/bt.png" width="60">
-                <img src="../assets/comcast.png" width="110">
-                <img src="../assets/elecard.png" width="130">
-                <img src="../assets/gcloud.png" width="140">
-                <img src="../assets/qualabs.png" width="130">
-                <img src="../assets/rte.png" width="70">
-                <img src="../assets/yospace.png" width="140">
-            </div>
+          <div class="company-logos">
+            <img src="../assets/ateme.png" width="100">
+            <img src="../assets/bbc.png" width="100">
+            <img src="../assets/bt.png" width="60">
+            <img src="../assets/comcast.png" width="110">
+            <img src="../assets/elecard.png" width="130">
+            <img src="../assets/gcloud.png" width="140">
+            <img src="../assets/qualabs.png" width="130">
+            <img src="../assets/rte.png" width="70">
+            <img src="../assets/yospace.png" width="140">
+          </div>
         </footer>
-    </div>
-</main>
-</body>
+      </div>
+    </main>
+  </body>
 </html>
