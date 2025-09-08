@@ -12,7 +12,7 @@
         width: 100%;
       }
 
-      .company-logos{
+      .company-logos {
         display: flex;
         justify-content: space-evenly;
         align-items: center;
@@ -20,8 +20,24 @@
         flex-direction: row;
       }
 
-      .margin-top-row {
+      .players {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin-top: 10px;
+        gap: 10px;
+      }
+
+      @media all and (orientation:portrait) {
+        .players {
+          flex-direction: column;
+        }
+      }
+
+      @media all and (orientation:landscape) {
+        .players {
+          flex-direction: row;
+        }
       }
     </style>
     <script>
@@ -157,12 +173,10 @@
                 </select>
                 <input id="custom-url" type="text" class="form-control" placeholder="Paste your own URL here">
               </div>
-              <div class="margin-top-row">
+              <div class="players">
                 <div id="video-container">
                   <video id="video" autoplay playsinline poster="../assets/ateme_poster.jpeg"></video>
                 </div>
-              </div>
-              <div class="margin-top-row">
                 <div id="video-container2" style="display: none;">
                   <video id="video2" autoplay playsinline muted></video>
                 </div>
