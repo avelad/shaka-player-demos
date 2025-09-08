@@ -26,16 +26,10 @@
       }
     </style>
     <script class="code">
-      async function init() {
-        shaka.polyfill.installAll();
-        if (!shaka.Player.isBrowserSupported()) {
-          return;
-        }
-
-        const video = document.querySelector('#video1');
-        const controlsDiv = document.querySelector('#controls');
+      async function getPlayer(videoContainer, video) {
         const localPlayer = new shaka.Player();
-        const ui = new shaka.ui.Overlay(localPlayer, controlsDiv, video);
+        await localPlayer.attach(video);
+        const ui = new shaka.ui.Overlay(localPlayer, videoContainer, video);
         const controls = ui.getControls();
         const player = controls.getPlayer();
         ui.configure({
@@ -53,12 +47,31 @@
             bufferingGoal: 30,
             bufferBehind: 30,
             minTimeBetweenRecoveries: 1,
+            liveSync: {
+              enabled: true,
+              targetLatency: 0,
+              targetLatencyTolerance: 0.5,
+            },
           },
           preferredAudioLanguage: languages[0],
           preferredTextLanguage: languages[0],
         });
 
-        await player.attach(video);
+        return player;
+      }
+      async function init() {
+        shaka.polyfill.installAll();
+        if (!shaka.Player.isBrowserSupported()) {
+          alert('Browser not supported!');
+          return;
+        }
+        const videoContainer = document.getElementById('video-container');
+        const video = document.getElementById('video');
+        const player = await getPlayer(videoContainer, video);
+
+        const altVideoContainer = document.getElementById('video-container2');
+        const altVideo = document.getElementById('video2');
+        const altPlayer = await getPlayer(altVideoContainer, altVideo);
 
         const loadButton = document.getElementById('load-button');
         const urlSelect = document.getElementById('url-select');
@@ -74,14 +87,26 @@
           }
         });
 
-        loadButton.addEventListener('click', async () => {
-            const enteredUrl = customUrl.value.trim();
+        loadButton.addEventListener('click', () => {
+          const enteredUrl = customUrl.value.trim();
           const selectedUrl = urlSelect.value;
-          try {
-            await player.load(enteredUrl !== '' ? enteredUrl : selectedUrl);
+          const mainUrl = enteredUrl !== '' ? enteredUrl : selectedUrl;
+          player.load(mainUrl).then(() => {
             video.play();
-          } catch (error) {
-            console.error('Error loading asset:', error);
+          }).catch((error) => {
+            console.error('Error loading asset:', mainUrl, error);
+          });
+          const originalUrl = urlSelect.selectedOptions[0].getAttribute('original');
+          if (originalUrl) {
+            altVideoContainer.style.display = '';
+            altPlayer.load(originalUrl).then(() => {
+              altVideo.play();
+            }).catch((error) => {
+              console.error('Error loading alt asset:', originalUrl, error);
+            });
+          } else {
+            altVideoContainer.style.display = 'none';
+            altPlayer.unload();
           }
         });
       }
@@ -106,16 +131,41 @@
                 <button id="load-button" type="button" class="btn btn-primary" aria-haspopup="true" aria-expanded="false">Load</button>
                 <select id="url-select" class="dropdown-toggle">
                   <option value="custom">Custom</option>
-                  <option value="https://gcdn.reallycloudy.com/live/database/rte/DASH/rte.mpd">RTÉ News L3D-DASH</option>
-                  <option value="https://gcdn.reallycloudy.com/live/database/rte_sport/DASH/rte_sport.mpd">RTÉ Sports L3D-DASH</option>
-                  <option value="https://gcdn.reallycloudy.com/live/database/rte/HLS/rte.m3u8">RTÉ News LL-HLS</option>
-                  <option value="https://gcdn.reallycloudy.com/live/database/rte_sport/HLS/rte_sport.m3u8">RTÉ Sports LL-HLS</option>
+                  <option value="https://euw3-l3d-atri.akamaized.net/composer/channels/e8204695-5957-49f1-8da1-827282944612/manifest.mpd"
+                      original="https://euw3-l3d-atri.akamaized.net/live/database/ull_l3d/DASH/ull_l3d.mpd">
+                    L3-DASH interstitial
+                  </option>
+                  <option value="https://euw3-l3d-atri.akamaized.net/composer/channels/91f78bfb-9329-4aaa-a4df-b12176f2ddb2/manifest.mpd"
+                      original="https://euw3-l3d-atri.akamaized.net/live/database/ull_l3d/DASH/ull_l3d.mpd">
+                    L3-DASH overlay
+                  </option>
+                  <option value="https://euw3-l3d-atri.akamaized.net/composer/channels/3d355e75-abda-48f2-8a54-c392006ec615/manifest.mpd"
+                      original="https://euw3-l3d-atri.akamaized.net/live/database/ull/DASH/ull.mpd">
+                    LL-DASH interstitial
+                  </option>
+                  <option value="https://euw3-l3d-atri.akamaized.net/composer/channels/f76931fd-1937-433b-a06a-32560dc0ed8b/manifest.mpd"
+                      original="https://euw3-l3d-atri.akamaized.net/live/database/ull/DASH/ull.mpd">
+                    LL-DASH overlay
+                  </option>
+                  <option value="https://ll-euw3-neadai-atri.akamaized.net/composer/channels/a55ed328-03c6-4702-898d-a846b5873374/master-playlist.m3u8"
+                      original="https://ll-euw3-neadai-atri.akamaized.net/origin/live/disk/dai/hls_fmp4_ll/dai.m3u8">
+                    LL-HLS interstitial
+                  </option>
+                  <option value="https://ll-euw3-neadai-atri.akamaized.net/composer/channels/efd075d2-5c91-4cda-97a4-a44a11d29ee5/master-playlist.m3u8"
+                      original="https://ll-euw3-neadai-atri.akamaized.net/origin/live/disk/dai/hls_fmp4_ll/dai.m3u8">
+                    LL-HLS overlay
+                  </option>
                 </select>
-                <input id="custom-url" type="text" class="form-control" placeholder="Paste your own URL here" style="margin-left: 8px;">
+                <input id="custom-url" type="text" class="form-control" placeholder="Paste your own URL here">
               </div>
               <div class="margin-top-row">
-                <div id="controls">
-                  <video data-shaka-player id="video1"></video>
+                <div id="video-container">
+                  <video id="video" autoplay playsinline></video>
+                </div>
+              </div>
+              <div class="margin-top-row">
+                <div id="video-container2" style="display: none;">
+                  <video id="video2" autoplay playsinline muted></video>
                 </div>
               </div>
             </div>
