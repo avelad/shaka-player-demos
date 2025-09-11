@@ -59,7 +59,46 @@
           preferredAudioLanguage: languages[0],
           preferredTextLanguage: languages[0],
         });
-        const url = new URL('./sign_language.mpd', window.location.href).toString();
+
+        const adManager = player.getAdManager();
+        adManager.addCustomInterstitial({
+          id: null,
+          groupId: null,
+          startTime: 0,
+          endTime: 303,
+          uri: 'https://ibc-signapse.s3.us-east-1.amazonaws.com/Overlay/DASH/Signapse-Overlay-master.mpd',
+          mimeType: null,
+          isSkippable: false,
+          skipOffset: null,
+          skipFor: null,
+          canJump: false,
+          resumeOffset: null,
+          playoutLimit: null,
+          once: false,
+          pre: false,
+          post: false,
+          timelineRange: false,
+          loop: false,
+          overlay: {
+            viewport: {
+              x: 1920,
+              y: 1080,
+            },
+            topLeft: {
+              x: 1560,
+              y: 720,
+            },
+            size: {
+              x: 360,
+              y: 360,
+            },
+          },
+          displayOnBackground: false,
+          background: null,
+          clickThroughUrl: null,
+        });
+        const url = 'https://ibc-signapse.s3.us-east-1.amazonaws.com/Background/DASH/France24-Background-master.mpd';
+        // const url = new URL('./sign_language.mpd', window.location.href).toString();
         try {
           await player.load(url);
         } catch (error) {
