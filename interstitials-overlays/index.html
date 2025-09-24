@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Interstitials and Overlays</title>
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
+    <script src="https://shaka-project.github.io/shaka-player/dist/shaka-player.ui.js"></script>
+    <link rel="stylesheet" href="https://shaka-project.github.io/shaka-player/dist/controls.css">
+    <link href="./bootstrap.min.css" rel="stylesheet">
+    <style>
+      video {
+        width: 100%;
+      }
+
+      .header {
+        text-align: center;
+      }
+
+      .company-logos {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-wrap: wrap;
+        flex-direction: row;
+      }
+
+      .players {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+        gap: 10px;
+      }
+
+      #time-label {
+        font-size: 1.5em;
+        margin-top: 10px;
+        text-align: center;
+      }
+
+      #time {
+        font-size: 2em;
+        text-align: center;
+      }
+
+      @media all and (orientation:portrait) {
+        .players {
+          flex-direction: column;
+        }
+      }
+
+      @media all and (orientation:landscape) {
+        .players {
+          flex-direction: row;
+        }
+      }
+    </style>
+    <script>
+      async function getPlayer(videoContainer, video) {
+        const localPlayer = new shaka.Player();
+        await localPlayer.attach(video);
+        const ui = new shaka.ui.Overlay(localPlayer, videoContainer, video);
+        const controls = ui.getControls();
+        const player = controls.getPlayer();
+        ui.configure({
+          customContextMenu: true,
+        });
+
+        const languages = navigator.languages || ['en-us'];
+        player.configure({
+          manifest: {
+            dash:{
+              clockSyncUri: 'https://time.akamai.com/?ms&iso',
+            },
+          },
+          streaming: {
+            bufferingGoal: 30,
+            bufferBehind: 30,
+            minTimeBetweenRecoveries: 1,
+            liveSync: {
+              enabled: true,
+              targetLatency: 0,
+              targetLatencyTolerance: 0.5,
+            },
+          },
+          preferredAudioLanguage: languages[0],
+          preferredTextLanguage: languages[0],
+        });
+
+        return player;
+      }
+      async function init() {
+        shaka.polyfill.installAll();
+        if (!shaka.Player.isBrowserSupported()) {
+          alert('Browser not supported!');
+          return;
+        }
+        const videoContainer = document.getElementById('video-container');
+        const video = document.getElementById('video');
+        const player = await getPlayer(videoContainer, video);
+
+        const altVideoContainer = document.getElementById('video-container2');
+        const altVideo = document.getElementById('video2');
+        const altPlayer = await getPlayer(altVideoContainer, altVideo);
+
+        const loadButton = document.getElementById('load-button');
+        const urlSelect = document.getElementById('url-select');
+        const customUrl = document.getElementById('custom-url');
+
+        urlSelect.addEventListener('change', () => {
+          if (urlSelect.value === 'custom') {
+            customUrl.disabled = false;
+            customUrl.value = '';
+          } else {
+            customUrl.value = urlSelect.value;
+            customUrl.disabled = true;
+          }
+        });
+
+        loadButton.addEventListener('click', () => {
+          const enteredUrl = customUrl.value.trim();
+          const selectedUrl = urlSelect.value;
+          const mainUrl = enteredUrl !== '' ? enteredUrl : selectedUrl;
+          player.load(mainUrl).then(() => {
+            video.play();
+          }).catch((error) => {
+            console.error('Error loading asset:', mainUrl, error);
+          });
+          const originalUrl = urlSelect.selectedOptions[0].getAttribute('original');
+          if (originalUrl) {
+            altVideoContainer.style.display = '';
+            altPlayer.load(originalUrl).then(() => {
+              altVideo.play();
+            }).catch((error) => {
+              console.error('Error loading alt asset:', originalUrl, error);
+            });
+          } else {
+            altVideoContainer.style.display = 'none';
+            altPlayer.unload();
+          }
+        });
+      }
+      function updateTime (element) {
+        element.textContent = new Date().toISOString();
+        setTimeout(function () {
+          updateTime(element);
+        }, 10);
+      }
+      document.addEventListener('DOMContentLoaded', () => {
+        init();
+        updateTime(document.getElementById('time'));
+      })
+    </script>
+  </head>
+  <body>
+    <main>
+      <div class="container py-4">
+        <header class="pb-3 mb-4 margin-top-row">
+          <h3 class="header">
+            <a href="./index.html">
+              <img src="../assets/ateme.png" width="100">
+            </a>
+          </h3>
+        </header>
+        <div class="row margin-top-row">
+          <div class="col-md-12">
+            <div class="h-100 p-5 border rounded-3">
+              <div class="input-group">
+                <button id="load-button" type="button" class="btn btn-primary" aria-haspopup="true" aria-expanded="false">Load</button>
+                <select id="url-select" class="dropdown-toggle">
+                  <option value="custom">Custom</option>
+                  <option value="https://ll-euw3-neadai-atri.akamaized.net/composer/channels/a55ed328-03c6-4702-898d-a846b5873374/master-playlist.m3u8"
+                      original="https://ll-euw3-neadai-atri.akamaized.net/origin/live/disk/dai/hls_fmp4_ll/dai.m3u8">
+                    LL-HLS interstitial
+                  </option>
+                  <option value="https://ll-euw3-neadai-atri.akamaized.net/composer/channels/efd075d2-5c91-4cda-97a4-a44a11d29ee5/master-playlist.m3u8"
+                      original="https://ll-euw3-neadai-atri.akamaized.net/origin/live/disk/dai/hls_fmp4_ll/dai.m3u8">
+                    LL-HLS overlay
+                  </option>
+                  <option value="https://ll-euw3-neadai-atri.akamaized.net/composer/channels/efd075d2-5c91-4cda-97a4-a44a11d29ee5/master-playlist.m3u8"
+                      original="https://ll-euw3-neadai-atri.akamaized.net/composer/channels/a55ed328-03c6-4702-898d-a846b5873374/master-playlist.m3u8">
+                    LL-HLS overlay + interstitial
+                  </option>
+                </select>
+                <input id="custom-url" type="text" class="form-control" placeholder="Paste your own URL here">
+              </div>
+              <div class="players">
+                <div id="video-container">
+                  <video id="video" autoplay playsinline muted poster="../assets/ateme_poster.jpeg"></video>
+                </div>
+                <div id="video-container2" style="display: none;">
+                  <video id="video2" autoplay playsinline muted></video>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="pt-3 mt-4 text-muted">
+          <div class="company-logos">
+            <img src="../assets/ateme.png" width="100">
+          </div>
+          <div id="time-label">Current time</div>
+          <div id="time"></div>
+        </footer>
+      </div>
+    </main>
+  </body>
+</html>
