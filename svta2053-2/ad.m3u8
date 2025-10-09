@@ -1,0 +1,16 @@
+#EXTM3U
+#EXT-X-VERSION:6
+#EXT-X-TARGETDURATION:5
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-PROGRAM-DATE-TIME:2000-01-01T00:00:00.00Z
+#EXT-X-MAP:URI="https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths-hls/v-0720p-2500k-libx264-init.mp4"
+#EXTINF:4.000,
+https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths-hls/v-0720p-2500k-libx264-s1.mp4
+#EXTINF:4.000,
+https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths-hls/v-0720p-2500k-libx264-s2.mp4
+#EXTINF:4.000,
+https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths-hls/v-0720p-2500k-libx264-s3.mp4
+#EXTINF:4.000,
+https://storage.googleapis.com/shaka-demo-assets/bbb-dark-truths-hls/v-0720p-2500k-libx264-s4.mp4
+#EXT-X-ENDLIST
+#EXT-X-DATERANGE:ID="0",CLASS="urn:svta:advertising-wg:ad-creative-signaling",START-DATE="2000-01-01T00:00:00Z",DURATION=16.0,X-AD-CREATIVE-SIGNALING="eyJ2ZXJzaW9uIjoyLCJ0eXBlIjoic2xvdCIsInBheWxvYWQiOlt7InR5cGUiOiJsaW5lYXIiLCJzdGFydCI6MCwiZHVyYXRpb24iOjE2LCJtZWRpYSI6W10sImlkZW50aWZpZXJzIjpbXSwidHJhY2tpbmciOlt7InR5cGUiOiJpbXByZXNzaW9uIiwidXJscyI6WyJodHRwczovL3d3dy5leGFtcGxlLmNvbS9pbXByZXNzaW9uIl19LHsidHlwZSI6InN0YXJ0IiwidXJscyI6WyJodHRwczovL3d3dy5leGFtcGxlLmNvbS9zdGFydCJdfSx7InR5cGUiOiJmaXJzdFF1YXJ0aWxlIiwidXJscyI6WyJodHRwczovL3d3dy5leGFtcGxlLmNvbS9maXJzdFF1YXJ0aWxlIl19LHsidHlwZSI6Im1pZHBvaW50IiwidXJscyI6WyJodHRwczovL3d3dy5leGFtcGxlLmNvbS9taWRwb2ludCJdfSx7InR5cGUiOiJ0aGlyZFF1YXJ0aWxlIiwidXJscyI6WyJodHRwczovL3d3dy5leGFtcGxlLmNvbS90aGlyZFF1YXJ0aWxlIl19LHsidHlwZSI6ImNvbXBsZXRlIiwidXJscyI6WyJodHRwczovL3d3dy5leGFtcGxlLmNvbS9jb21wbGV0ZSJdfSx7InR5cGUiOiJza2lwIiwidXJscyI6WyJodHRwczovL3d3dy5leGFtcGxlLmNvbS9za2lwIl19LHsidHlwZSI6ImVycm9yIiwidXJscyI6WyJodHRwczovL3d3dy5leGFtcGxlLmNvbS9lcnJvciJdfSx7InR5cGUiOiJyZXN1bWUiLCJ1cmxzIjpbImh0dHBzOi8vd3d3LmV4YW1wbGUuY29tL3Jlc3VtZSJdfSx7InR5cGUiOiJwYXVzZSIsInVybHMiOlsiaHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vcGF1c2UiXX0seyJ0eXBlIjoibXV0ZSIsInVybHMiOlsiaHR0cHM6Ly93d3cuZXhhbXBsZS5jb20vbXV0ZSJdfSx7InR5cGUiOiJ1bm11dGUiLCJ1cmxzIjpbImh0dHBzOi8vd3d3LmV4YW1wbGUuY29tL3VubXV0ZSJdfV0sInZlcmlmaWNhdGlvbnMiOltdfV19"
