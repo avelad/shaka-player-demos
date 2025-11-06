@@ -36,6 +36,7 @@
         localPlayer.attach(video);
         const ui = new shaka.ui.Overlay(localPlayer, videoContainer, video);
         ui.configure({
+          castReceiverAppId: '07AEE832',
           customContextMenu: true,
           enableKeyboardPlaybackControlsInWindow: true,
         });
