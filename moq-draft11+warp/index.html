@@ -62,8 +62,13 @@
           preferredAudioLanguage: languages[0],
           preferredTextLanguage: languages[0],
         });
+        let url = 'https://moqlivemock.demo.osaas.io/moq';
+        if (location.href.includes('?local')) {
+          url = 'https://localhost:4443/moq';
+          player.configure('manifest.msf.fingerprintUri', 'http://localhost:8081/fingerprint');
+        }
         try {
-          await player.load('https://moqlivemock.demo.osaas.io/moq', null, 'application/msf');
+          await player.load(url, null, 'application/msf');
         } catch (error) {
           console.error(error);
         }
