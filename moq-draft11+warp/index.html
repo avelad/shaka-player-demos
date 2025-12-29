@@ -67,6 +67,9 @@
           url = 'https://localhost:4443/moq';
           player.configure('manifest.msf.fingerprintUri', 'http://localhost:8081/fingerprint');
         }
+        if (location.href.includes('?url=')) {
+          url = location.href.split('?url=').pop();
+        }
         try {
           await player.load(url, null, 'application/msf');
         } catch (error) {
