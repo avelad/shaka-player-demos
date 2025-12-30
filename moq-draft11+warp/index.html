@@ -68,7 +68,11 @@
           player.configure('manifest.msf.fingerprintUri', 'http://localhost:8081/fingerprint');
         }
         if (location.href.includes('?url=')) {
-          url = location.href.split('?url=').pop();
+          const parts = location.href.split('?url=').pop().split(',');
+          url = parts[0];
+          if (parts.length == 2) {
+            player.configure('manifest.msf.fingerprintUri', parts[1]);
+          }
         }
         try {
           await player.load(url, null, 'application/msf');
