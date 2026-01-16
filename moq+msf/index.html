@@ -5,87 +5,10 @@
     <meta name="description" content="MoQT draft-14 + MSF draft-1">
     <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
     <title>MoQT draft-14 + MSF draft-1</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background-color: black;
-      }
-      #video-container {
-        width: 100vw;
-        width: 100dvw;
-        height: 100vh;
-        height: 100dvh;
-      }
-      #video {
-        width:100%;
-      }
-    </style>
     <link rel="stylesheet" href="https://shaka-project.github.io/shaka-player/dist/controls.css">
+    <link rel="stylesheet" href="./app.css">
     <script src="https://shaka-project.github.io/shaka-player/dist/shaka-player.experimental.debug.js"></script>
-    <script>
-      async function initPlayer() {
-        shaka.polyfill.installAll();
-        if (!shaka.Player.isBrowserSupported()) {
-          alert('Browser not supported!');
-          return;
-        }
-        if (shaka.log) {
-          shaka.log.setLevel(shaka.log.Level.INFO);
-        }
-        const videoContainer = document.getElementById('video-container');
-        const video = document.getElementById('video');
-        const localPlayer = new shaka.Player();
-        localPlayer.attach(video);
-        const ui = new shaka.ui.Overlay(localPlayer, videoContainer, video);
-        ui.configure({
-          customContextMenu: true,
-          enableKeyboardPlaybackControlsInWindow: true,
-        });
-        const controls = ui.getControls();
-        const player = controls.getPlayer();
-        player.addEventListener('error', (event) => {
-          console.error(event);
-        });
-        const languages = navigator.languages || ['en-us'];
-        player.configure({
-          manifest: {
-            dash:{
-              clockSyncUri: 'https://time.akamai.com/?ms&iso',
-            },
-          },
-          streaming: {
-            bufferingGoal: 30,
-            bufferBehind: 30,
-            minTimeBetweenRecoveries: 1,
-          },
-          preferredAudioLanguage: languages[0],
-          preferredTextLanguage: languages[0],
-        });
-        let url = 'https://moqlivemock.demo.osaas.io/moq';
-        if (location.href.includes('?local')) {
-          url = 'https://localhost:4443/moq';
-          player.configure('manifest.msf.fingerprintUri', 'http://localhost:8081/fingerprint');
-        }
-        if (location.href.includes('?url=')) {
-          const parts = location.href.split('?url=').pop().split(',');
-          url = parts[0];
-          if (parts.length == 2) {
-            player.configure('manifest.msf.fingerprintUri', parts[1]);
-          }
-        }
-        try {
-          await player.load(url, null, 'application/msf');
-        } catch (error) {
-          console.error(error);
-        }
-      }
-      document.addEventListener('DOMContentLoaded', initPlayer)
-    </script>
+    <script src="./app.js"></script>
   </head>
-  <body>
-    <div id="video-container">
-      <video id="video" autoplay playsinline></video>
-    </div>
-  </body>
+  <body></body>
 </html>

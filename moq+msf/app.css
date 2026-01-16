@@ -1,0 +1,126 @@
+body {
+  background-color: #404953;
+  color: #FFFFFF;
+}
+
+#unsupported {
+  color: #e11616;
+  font-size: 48px;
+  text-align: center;
+}
+
+#inputs-container {
+  margin-bottom: 15px;
+}
+
+.input-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.drm-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.input-container + .input-container,
+.input-container + .drm-container {
+	margin-top: 10px;
+}
+
+.url-input,
+.drm-select {
+  flex: 1;
+  padding: 5px 12px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #24292e;
+  vertical-align: middle;
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  outline: none;
+  box-shadow: rgba(225, 228, 232, 0.2) 0px 1px 0px 0px inset;
+}
+
+.url-input:focus {
+  border-color: #0366d6;
+  outline: none;
+  box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+}
+
+#save,
+#load,
+#unload {
+  display: inline-block;
+  outline: 0;
+  text-align: center;
+  cursor: pointer;
+  padding: 0px 16px;
+  border-radius: 4px;
+  min-width: 80px;
+  height: 32px;
+  background-color: rgb(0, 120, 212);
+  color: rgb(255, 255, 255);
+  font-size: 14px;
+  font-weight: 400;
+  box-sizing: border-box;
+  border: 1px solid rgb(0, 120, 212);
+}
+
+#save:hover,
+#load:hover,
+#unload:hover  {
+  background-color: rgb(16, 110, 190);
+  border: 1px solid rgb(16, 110, 190);
+}
+
+#save,
+#load {
+	margin-right: 20px;
+}
+
+#buttons-container {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+#time {
+  margin-bottom: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+#player-container {
+  position: relative;
+  margin: 0 auto;
+  width: 80%;
+}
+
+@media (max-width: 600px) {
+  #player-container {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+.player-error {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: red;
+  text-align: center;
+  z-index: 10;
+}
+
+#shaka-player-version {
+  margin-top: 15px;
+}
