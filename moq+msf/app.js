@@ -200,7 +200,6 @@ function loadPlayer (fromPageLoad) {
   localPlayer.attach(video);
   const ui = new shaka.ui.Overlay(localPlayer, videoContainer, video);
   ui.configure({
-    customContextMenu: true,
     castReceiverAppId: '07AEE832',
     enableKeyboardPlaybackControlsInWindow: true,
   });

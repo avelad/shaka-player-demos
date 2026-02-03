@@ -70,7 +70,6 @@
         const player = controls.getPlayer();
         ui.configure({
           castReceiverAppId: '07AEE832',
-          customContextMenu: true,
         });
 
         const languages = navigator.languages || ['en-us'];
@@ -91,7 +90,6 @@
             },
           },
           preferredAudioLanguage: languages[0],
-          preferredTextLanguage: languages[0],
         });
 
         return player;

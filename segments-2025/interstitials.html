@@ -36,7 +36,6 @@
         localPlayer.attach(video);
         const ui = new shaka.ui.Overlay(localPlayer, videoContainer, video);
         ui.configure({
-          customContextMenu: true,
           enableKeyboardPlaybackControlsInWindow: true,
         });
         const controls = ui.getControls();
@@ -57,7 +56,6 @@
             minTimeBetweenRecoveries: 1,
           },
           preferredAudioLanguage: languages[0],
-          preferredTextLanguage: languages[0],
         });
         const url = new URL('./interstitial.m3u8', window.location.href).toString();
         try {

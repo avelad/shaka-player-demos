@@ -58,9 +58,6 @@
         const ui = new shaka.ui.Overlay(localPlayer, videoContainer, video);
         const controls = ui.getControls();
         const player = controls.getPlayer();
-        ui.configure({
-          customContextMenu: true,
-        });
 
         const languages = navigator.languages || ['en-us'];
         player.configure({
@@ -80,7 +77,6 @@
             },
           },
           preferredAudioLanguage: languages[0],
-          preferredTextLanguage: languages[0],
         });
 
         return player;

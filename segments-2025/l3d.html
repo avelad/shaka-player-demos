@@ -36,7 +36,6 @@
         localPlayer.attach(video);
         const ui = new shaka.ui.Overlay(localPlayer, videoContainer, video);
         ui.configure({
-          customContextMenu: true,
           enableKeyboardPlaybackControlsInWindow: true,
         });
         const controls = ui.getControls();
@@ -57,7 +56,6 @@
             minTimeBetweenRecoveries: 1,
           },
           preferredAudioLanguage: languages[0],
-          preferredTextLanguage: languages[0],
         });
         const url = 'https://nea-ibc.ateme-ri.com//live/disk/l3d/dash-ull-59/l3d.mpd';
         try {
