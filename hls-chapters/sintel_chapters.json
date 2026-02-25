@@ -8,6 +8,14 @@
         "language": "und",
         "title": "Opening credits"
       }
+    ],
+    "images": [
+      {
+        "image-category": "thumbnail",
+        "pixel-width": 1280,
+        "pixel-height": 546,
+        "url": "videoframe_0.000.png"
+      }
     ]
   },
   {
@@ -18,6 +26,14 @@
       {
         "language": "und",
         "title": "A dangerous quest"
+      }
+    ],
+    "images": [
+      {
+        "image-category": "thumbnail",
+        "pixel-width": 1280,
+        "pixel-height": 546,
+        "url": "videoframe_102.000.png"
       }
     ]
   },
@@ -30,6 +46,14 @@
         "language": "und",
         "title": "The attack"
       }
+    ],
+    "images": [
+      {
+        "image-category": "thumbnail",
+        "pixel-width": 1280,
+        "pixel-height": 546,
+        "url": "videoframe_284.000.png"
+      }
     ]
   },
   {
@@ -40,6 +64,14 @@
       {
         "language": "und",
         "title": "In pursuit"
+      }
+    ],
+    "images": [
+      {
+        "image-category": "thumbnail",
+        "pixel-width": 1280,
+        "pixel-height": 546,
+        "url": "videoframe_350.000.png"
       }
     ]
   },
@@ -52,6 +84,14 @@
         "language": "und",
         "title": "Cave Fight"
       }
+    ],
+    "images": [
+      {
+        "image-category": "thumbnail",
+        "pixel-width": 1280,
+        "pixel-height": 546,
+        "url": "videoframe_504.000.png"
+      }
     ]
   },
   {
@@ -63,6 +103,14 @@
         "language": "und",
         "title": "Eye to eye"
       }
+    ],
+    "images": [
+      {
+        "image-category": "thumbnail",
+        "pixel-width": 1280,
+        "pixel-height": 546,
+        "url": "videoframe_613.000.png"
+      }
     ]
   },
   {
@@ -73,6 +121,14 @@
       {
         "language": "und",
         "title": "Ending Credits"
+      }
+    ],
+    "images": [
+      {
+        "image-category": "thumbnail",
+        "pixel-width": 1280,
+        "pixel-height": 546,
+        "url": "videoframe_744.000.png"
       }
     ]
   }

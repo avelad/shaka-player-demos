@@ -3,7 +3,7 @@
 
 #EXT-X-SESSION-DATA:DATA-ID="com.apple.hls.chapters",URI="sintel_chapters.json"
 #EXT-X-SESSION-DATA:DATA-ID="com.apple.hls.title",VALUE="Sintel",LANGUAGE="en-US"
-#EXT-X-SESSION-DATA:DATA-ID="com.apple.hls.poster",VALUE="https://storage.googleapis.com/shaka-asset-icons/sintel.png",LANGUAGE="en-US"
+#EXT-X-SESSION-DATA:DATA-ID="com.apple.hls.poster",VALUE="https://storage.googleapis.com/shaka-asset-icons/sintel.webp",LANGUAGE="en-US"
 
 
 #EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",LANGUAGE="en",NAME="English",CHANNELS="2",URI="https://storage.googleapis.com/shaka-demo-assets/sintel-fmp4-aes/audio/en/mp4a.40.2/media.m3u8"
