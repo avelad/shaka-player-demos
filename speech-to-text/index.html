@@ -60,8 +60,13 @@
               languagesToTranslate: ['en', 'fr', 'es'],
             },
           },
-          preferredAudioLanguage: languages[0],
-          preferredTextLanguage: languages[0],
+          preferredAudio: languages.map((l) => ({
+            language: l,
+            role: '',
+            label: '',
+            channelCount: 2,
+            codec: '',
+          })),
         });
 
         const url = 'https://ztnr.rtve.es/ztnr/1694255.m3u8';

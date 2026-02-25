@@ -248,7 +248,13 @@ function loadPlayer (fromPageLoad) {
       bufferBehind: 30,
       minTimeBetweenRecoveries: 1,
     },
-    preferredAudioLanguage: languages[0],
+    preferredAudio: languages.map((l) => ({
+      language: l,
+      role: '',
+      label: '',
+      channelCount: 2,
+      codec: '',
+    })),
   };
   if (license) {
     if (drm == 'Widevine') {

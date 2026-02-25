@@ -56,7 +56,13 @@
             bufferBehind: 30,
             minTimeBetweenRecoveries: 1,
           },
-          preferredAudioLanguage: languages[0],
+          preferredAudio: languages.map((l) => ({
+            language: l,
+            role: '',
+            label: '',
+            channelCount: 2,
+            codec: '',
+          })),
         });
         const url = new URL('./master.m3u8', window.location.href).toString();
         try {
