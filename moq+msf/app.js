@@ -245,7 +245,7 @@ function loadPlayer (fromPageLoad) {
     },
     streaming: {
       bufferingGoal: 30,
-      bufferBehind: 30,
+      bufferBehind: 10,
       minTimeBetweenRecoveries: 1,
     },
     preferredAudio: languages.map((l) => ({
