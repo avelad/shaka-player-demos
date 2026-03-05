@@ -319,9 +319,6 @@ function remakeHash() {
 function initApp() {
   shaka.polyfill.installAll();
   if (shaka.Player.isBrowserSupported()) {
-    if (shaka.log) {
-      shaka.log.setLevel(shaka.log.Level.INFO);
-    }
     setupUI();
     window.addEventListener('visibilitychange', function () {
       if (!document.hidden && playerUI) {
