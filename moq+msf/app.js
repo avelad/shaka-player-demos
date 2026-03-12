@@ -53,10 +53,12 @@ function setupUI () {
 
   const defaultUrl = params.url || (Object.keys(params).length === 0 ? 'https://moqlivemock.demo.osaas.io/moq' : '');
   const defaultFingerprintUri = params.fingerprintUri || '';
+  const defaultNamespaces = params.namespaces || '';
   const defaultLicense = params.license || '';
 
   createInput(inputsContainer, 'url', defaultUrl, 'MoQ Server URL');
   createInput(inputsContainer, 'fingerprint', defaultFingerprintUri, 'Fingerprint URL (for self-signed certificates)');
+  createInput(inputsContainer, 'namespaces', defaultNamespaces, 'Custom namespaces if the MoQ relay does not announce the namespaces');
 
   const drmContainer = document.createElement('div');
   drmContainer.classList.add('drm-container')
@@ -178,6 +180,7 @@ function unloadPlayer () {
 function loadPlayer (fromPageLoad) {
   const url = document.getElementById('url').value;
   const fingerprintUri = document.getElementById('fingerprint').value;
+  const namespaces = document.getElementById('namespaces').value;
   const drm = document.getElementById('drm-select').value;
   const license = document.getElementById('drm-license').value;
   unloadPlayer();
@@ -238,6 +241,7 @@ function loadPlayer (fromPageLoad) {
     manifest: {
       msf: {
         fingerprintUri: fingerprintUri || '',
+        namespaces: namespaces != '' ? namespaces.split(',') : [],
       },
     },
     drm: {
@@ -292,6 +296,10 @@ function remakeHash() {
   const fingerprintUri = document.getElementById('fingerprint').value;
   if (fingerprintUri) {
     params.push('fingerprintUri=' + encodeURIComponent(fingerprintUri));
+  }
+  const namespaces = document.getElementById('namespaces').value;
+  if (namespaces) {
+    params.push('namespaces=' + encodeURIComponent(namespaces));
   }
 
   const drmSelect = document.getElementById('drm-select');
