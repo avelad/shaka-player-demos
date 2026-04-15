@@ -55,13 +55,14 @@ function setupUI () {
   const defaultFingerprintUri = params.fingerprintUri || '';
   const defaultNamespaces = params.namespaces || '';
   const defaultLicense = params.license || '';
+  let defaultMoqVersion = params.moqVersion || '';
+  const defaultUseFetchCatalog = 'fetchCatalog' in params;
 
   createInput(inputsContainer, 'url', defaultUrl, 'MoQ Server URL');
-  createInput(inputsContainer, 'fingerprint', defaultFingerprintUri, 'Fingerprint URL (for self-signed certificates)');
   createInput(inputsContainer, 'namespaces', defaultNamespaces, 'Custom namespaces if the MoQ relay does not announce the namespaces');
 
   const drmContainer = document.createElement('div');
-  drmContainer.classList.add('drm-container')
+  drmContainer.classList.add('horizontal-container')
   inputsContainer.appendChild(drmContainer);
 
   const drmSelect = document.createElement('select');
@@ -87,6 +88,55 @@ function setupUI () {
   }
   drmContainer.appendChild(drmSelect);
   const drmLicenseInput = createInput(drmContainer, 'drm-license', defaultLicense, 'License URL (for encrypted streams)');
+
+  const advancedContainer = document.createElement('div');
+  advancedContainer.id = 'advanced-container';
+  advancedContainer.style.display = 'none';
+  inputsContainer.appendChild(advancedContainer);
+
+  createInput(advancedContainer, 'fingerprint', defaultFingerprintUri, 'Fingerprint URL (for self-signed certificates)');
+
+  const moqVersionSelect = document.createElement('select');
+  moqVersionSelect.id = 'moq-version';
+  moqVersionSelect.classList.add('drm-select');
+  const moqVersions = Object.values(shaka.config.MsfVersion);
+  if (!moqVersions.includes(defaultMoqVersion)) {
+    defaultMoqVersion = 'auto';
+  }
+  for (const version of moqVersions) {
+    const option = document.createElement('option');
+    option.value = version;
+    option.label = version;
+    if (version === defaultMoqVersion) {
+      option.setAttribute('selected', '');
+    }
+    moqVersionSelect.appendChild(option);
+  }
+  const moqVersionLabel = document.createElement('label');
+  moqVersionLabel.textContent = 'MOQ version';
+  const moqContainer = document.createElement('div');
+  moqContainer.classList.add('horizontal-container');
+  moqContainer.appendChild(moqVersionLabel);
+  moqContainer.appendChild(moqVersionSelect);
+  advancedContainer.appendChild(moqContainer);
+
+  const fetchContainer = document.createElement('div');
+  fetchContainer.classList.add('left-container');
+  const fetchLabel = document.createElement('label');
+  fetchLabel.textContent = 'Use FETCH for catalog';
+  const fetchCheckbox = document.createElement('input');
+  fetchCheckbox.type = 'checkbox';
+  fetchCheckbox.id = 'fetch-catalog';
+  fetchCheckbox.checked = defaultUseFetchCatalog;
+  fetchContainer.appendChild(fetchLabel);
+  fetchContainer.appendChild(fetchCheckbox);
+  advancedContainer.appendChild(fetchContainer);
+
+  if (defaultFingerprintUri ||
+      defaultMoqVersion !== 'auto' ||
+      defaultUseFetchCatalog) {
+    advancedContainer.style.display = 'block';
+  }
 
   function updateDrmLicenseState() {
     if (drmSelect.value === 'None') {
@@ -183,6 +233,8 @@ function loadPlayer (fromPageLoad) {
   const namespaces = document.getElementById('namespaces').value;
   const drm = document.getElementById('drm-select').value;
   const license = document.getElementById('drm-license').value;
+  const moqVersion = document.getElementById('moq-version').value;
+  const useFetchCatalog = document.getElementById('fetch-catalog').checked;
   unloadPlayer();
   if (!url) {
     return;
@@ -242,6 +294,8 @@ function loadPlayer (fromPageLoad) {
       msf: {
         fingerprintUri: fingerprintUri || '',
         namespaces: namespaces != '' ? namespaces.split(',') : [],
+        useFetchCatalog: useFetchCatalog,
+        version: moqVersion,
       },
     },
     drm: {
@@ -312,6 +366,16 @@ function remakeHash() {
     }
   }
 
+  const moqVersion = document.getElementById('moq-version').value;
+  if (moqVersion && moqVersion !== 'auto') {
+    params.push('moqVersion=' + encodeURIComponent(moqVersion));
+  }
+
+  const fetchCatalog = document.getElementById('fetch-catalog');
+  if (fetchCatalog && fetchCatalog.checked) {
+    params.push('fetchCatalog');
+  }
+
   if (playerUI) {
     params.push('play');
   }
@@ -345,6 +409,35 @@ function initApp() {
     unsupportedDiv.textContent = 'Browser not supported!';
     document.body.appendChild(unsupportedDiv);
   }
+
+  const advancedOptionsContainer = document.createElement('div');
+  advancedOptionsContainer.classList.add('left-container');
+
+  const advancedOptionsLabel = document.createElement('label');
+  advancedOptionsLabel.textContent = 'More options';
+
+  const advancedOptionsCheckbox = document.createElement('input');
+  advancedOptionsCheckbox.type = 'checkbox';
+  advancedOptionsCheckbox.id = 'advanced-options';
+
+  advancedOptionsContainer.appendChild(advancedOptionsLabel);
+  advancedOptionsContainer.appendChild(advancedOptionsCheckbox);
+
+  const advancedContainer = document.getElementById('advanced-container');
+  if (advancedContainer.style.display === 'block') {
+    advancedOptionsCheckbox.checked = true;
+  }
+
+  advancedOptionsCheckbox.addEventListener('change', () => {
+    if (advancedOptionsCheckbox.checked) {
+      advancedContainer.style.display = 'block';
+    } else {
+      advancedContainer.style.display = 'none';
+    }
+  });
+
+  document.body.appendChild(advancedOptionsContainer);
+
   const shakaPlayerversion = document.createElement('div');
   shakaPlayerversion.id = 'shaka-player-version';
   shakaPlayerversion.textContent = 'Shaka Player: ' + shaka.Player.version;

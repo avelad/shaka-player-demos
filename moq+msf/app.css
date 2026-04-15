@@ -3,6 +3,10 @@ body {
   color: #FFFFFF;
 }
 
+label + input[type="checkbox"] {
+  margin-left: 10px;
+}
+
 #unsupported {
   color: #e11616;
   font-size: 48px;
@@ -10,7 +14,11 @@ body {
 }
 
 #inputs-container {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+}
+
+#advanced-container {
+  margin-top: 10px;
 }
 
 .input-container {
@@ -20,14 +28,32 @@ body {
   width: 100%;
 }
 
-.drm-container {
+.left-container {
+  align-items: start;
+  display: flex;
+  justify-content: flex-start;
+
+  label + select {
+    margin-left: 10px;
+  }
+}
+
+.horizontal-container {
   align-items: center;
   display: flex;
   justify-content: center;
+
+  label + select {
+    margin-left: 10px;
+  }
 }
 
 .input-container + .input-container,
-.input-container + .drm-container {
+.input-container + .horizontal-container,
+.input-container + .left-container,
+.horizontal-container + .horizontal-container,
+.horizontal-container + .left-container ,
+.left-container + .left-container  {
 	margin-top: 10px;
 }
 
@@ -93,14 +119,13 @@ body {
 }
 
 #time {
-  margin-bottom: 10px;
   text-align: center;
   width: 100%;
 }
 
 #player-container {
   position: relative;
-  margin: 0 auto;
+  margin: 10px auto;
   width: 80%;
 }
 
@@ -122,5 +147,5 @@ body {
 }
 
 #shaka-player-version {
-  margin-top: 15px;
+  margin-top: 10px;
 }
