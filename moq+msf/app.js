@@ -324,7 +324,7 @@ function loadPlayer (fromPageLoad) {
   player.configure(config);
   player.load(url.trim(), null, 'application/msf').then(() => {
     if (player.isAudioOnly()) {
-      video.poster = 'https://shaka-player-demo.appspot.com/assets/audioOnly.gif';
+      video.poster = 'https://shaka-project.github.io/shaka-player/demo/poster-audio.gif';
     }
     if (video.paused) {
       video.play().catch(() => {});
