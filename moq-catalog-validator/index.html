@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="MOQ catalog validator for MSF, CMSF, LOC, CMAF, LOCMAF and MPEG-2 TS packaging">
+  <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
+  <title>MOQ Catalog Validator</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+  <header>
+    <a class="title" href="../index.html">MOQ Catalog Validator</a>
+    <img alt="ATEME" src="../assets/ateme.svg"/>
+  </header>
+  <div class="validator">
+    <p class="lead">
+      Checks a MOQ catalog against the MSF and CMSF drafts: it identifies the streaming format, draft version
+      and media packaging in use, then reports missing required fields, values that break the specification and
+      fields that belong to a different draft, each linked to the section that defines it.
+    </p>
+    <p class="specs">
+      Supported: MSF
+      <a href="https://datatracker.ietf.org/doc/html/draft-ietf-moq-msf-00" target="_blank" rel="noopener">draft-00</a> /
+      <a href="https://datatracker.ietf.org/doc/html/draft-ietf-moq-msf-01" target="_blank" rel="noopener">draft-01</a>,
+      CMSF
+      <a href="https://datatracker.ietf.org/doc/html/draft-ietf-moq-cmsf-00" target="_blank" rel="noopener">draft-00</a> /
+      <a href="https://datatracker.ietf.org/doc/html/draft-ietf-moq-cmsf-01" target="_blank" rel="noopener">draft-01</a>
+      &mdash; packaging
+      <a href="https://www.ietf.org/archive/id/draft-ietf-moq-loc-02.html" target="_blank" rel="noopener">LOC</a>,
+      CMAF,
+      <a href="https://datatracker.ietf.org/doc/html/draft-einarsson-moq-locmaf-00" target="_blank" rel="noopener">LOCMAF</a>,
+      <a href="https://datatracker.ietf.org/doc/html/draft-gregoire-moq-msfts-00" target="_blank" rel="noopener">M2TS</a>,
+      plus mediatimeline, eventtimeline, moqlog and moqmetrics.
+    </p>
+
+    <div class="toolbar">
+      <label for="example">Example:</label>
+      <select id="example"><option value="">-- none --</option></select>
+      <label for="profile">Profile:</label>
+      <select id="profile">
+        <option value="auto">Auto-detect</option>
+        <option value="msf-00">MSF draft-00</option>
+        <option value="msf-01">MSF draft-01</option>
+        <option value="cmsf-00">CMSF draft-00</option>
+        <option value="cmsf-01">CMSF draft-01</option>
+      </select>
+      <button id="validate" class="primary">Validate</button>
+      <button id="format">Format JSON</button>
+      <button id="clear">Clear</button>
+    </div>
+
+    <textarea id="input" spellcheck="false" placeholder="{ &quot;version&quot;: &quot;1&quot;, &quot;tracks&quot;: [ ... ] }"></textarea>
+
+    <div id="output"></div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
