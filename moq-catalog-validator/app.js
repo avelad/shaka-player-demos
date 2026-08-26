@@ -500,22 +500,37 @@
   // Track validation
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Splits the codec field into its individual codec strings. A track normally
+   * declares a single codec, but an m2ts track carries a multiplex, so the
+   * field may hold an RFC 6381 comma-separated list describing every
+   * elementary stream in the program.
+   */
+  function codecList(track) {
+    if (typeof track.codec !== 'string') return [];
+    return track.codec.split(',').map(function(codec) { return codec.trim(); });
+  }
+
   function isAudioTrack(track) {
     return track.role === 'audio' || track.role === 'audiodescription' ||
-        (typeof track.codec === 'string' && AUDIO_CODEC_RE.test(track.codec));
+        codecList(track).some(function(codec) { return AUDIO_CODEC_RE.test(codec); });
   }
 
   function isVideoTrack(track) {
     return track.role === 'video' || track.role === 'signlanguage' ||
-        (typeof track.codec === 'string' && VIDEO_CODEC_RE.test(track.codec));
+        codecList(track).some(function(codec) { return VIDEO_CODEC_RE.test(codec); });
   }
 
   /** Best-effort guess of what the track carries, used to report missing fields. */
   function guessRole(track) {
     if (typeof track.role === 'string') return track.role;
-    if (typeof track.codec === 'string') {
-      if (AUDIO_CODEC_RE.test(track.codec)) return 'audio (guessed from codec)';
-      if (VIDEO_CODEC_RE.test(track.codec)) return 'video (guessed from codec)';
+    const codecs = codecList(track);
+    if (codecs.length) {
+      const video = codecs.some(function(codec) { return VIDEO_CODEC_RE.test(codec); });
+      const audio = codecs.some(function(codec) { return AUDIO_CODEC_RE.test(codec); });
+      if (video && audio) return 'multiplexed audio + video (guessed from codec)';
+      if (audio) return 'audio (guessed from codec)';
+      if (video) return 'video (guessed from codec)';
     }
     if (track.width !== undefined || track.height !== undefined || track.framerate !== undefined) {
       return 'video (guessed from width/height/framerate)';
@@ -654,8 +669,9 @@
     const mediaPackaging = packaging === 'loc' || packaging === 'cmaf' ||
         packaging === 'locmaf' || packaging === 'm2ts';
     const m2tsHint = 'The MSF-TS examples omit it, but a subscriber needs the codec to select a rendition ' +
-        'and initialise a decoder before it has parsed the PMT. Use an RFC 6381 / WebCodecs codec string ' +
-        'describing the elementary streams, e.g. "avc1.640028".';
+        'and initialise a decoder before it has parsed the PMT. Use an RFC 6381 / WebCodecs codec string, ' +
+        'or a comma-separated list when the program multiplexes several elementary streams, ' +
+        'e.g. "avc1.640028,mp4a.40.2".';
     if (track.codec === undefined && (audio || video || (mediaPackaging && !timeline))) {
       if (mediaPackaging) {
         report.error(path, 'Missing conditionally required field "codec". It MUST be specified for tracks ' +
@@ -669,14 +685,37 @@
             msfRef(profile, '5.1.24', '5.2.18'));
       }
     }
+    const codecs = codecList(track);
+    const multiplexed = codecs.length > 1;
+    if (multiplexed) {
+      codecs.forEach(function(codec, codecIndex) {
+        if (!codec) {
+          report.error(path + '.codec', 'Empty entry at position ' + codecIndex + ' in the codec list.',
+              msfRef(profile, '5.1.24', '5.2.18'));
+        }
+      });
+      if (packaging !== 'm2ts') {
+        report.warn(path + '.codec', 'A comma-separated codec list describes a multiplex. A track with ' +
+            '"' + packaging + '" packaging carries a single elementary stream, so it declares a single codec.',
+            msfRef(profile, '5.1.24', '5.2.18'));
+      }
+    }
     if (audio) {
+      // A multiplexed track has one samplerate/channelConfig field but several
+      // elementary streams, so the requirement cannot be met unambiguously.
+      const multiplexHint = 'This track multiplexes several elementary streams; describe the audio ' +
+          'programme a subscriber is expected to render, or split the renditions into separate tracks.';
       if (track.samplerate === undefined) {
-        report.error(path, 'Missing conditionally required field "samplerate". It MUST accompany tracks ' +
-            'for which audio codecs are specified.', msfRef(profile, '5.1.31', '5.2.28'));
+        report.add(multiplexed ? 'warning' : 'error', path,
+            'Missing conditionally required field "samplerate". It MUST accompany tracks ' +
+            'for which audio codecs are specified.', msfRef(profile, '5.1.31', '5.2.28'),
+            multiplexed ? multiplexHint : undefined);
       }
       if (track.channelConfig === undefined) {
-        report.error(path, 'Missing conditionally required field "channelConfig". It MUST accompany tracks ' +
-            'for which audio codecs are specified.', msfRef(profile, '5.1.32', '5.2.29'));
+        report.add(multiplexed ? 'warning' : 'error', path,
+            'Missing conditionally required field "channelConfig". It MUST accompany tracks ' +
+            'for which audio codecs are specified.', msfRef(profile, '5.1.32', '5.2.29'),
+            multiplexed ? multiplexHint : undefined);
       }
     }
     if (video) {
@@ -1612,10 +1651,12 @@
             targetLatency: 1000,
             role: 'video',
             mimeType: 'video/mp2t',
-            codec: 'avc1.640028',
+            codec: 'avc1.640028,mp4a.40.2',
             width: 1920,
             height: 1080,
             framerate: 25,
+            samplerate: 48000,
+            channelConfig: '2',
             bitrate: 6000000,
             altGroup: 1,
             m2tsPacketSize: 188,
@@ -1634,10 +1675,12 @@
             targetLatency: 1000,
             role: 'video',
             mimeType: 'video/mp2t',
-            codec: 'avc1.64001e',
+            codec: 'avc1.64001e,mp4a.40.2',
             width: 960,
             height: 540,
             framerate: 25,
+            samplerate: 48000,
+            channelConfig: '2',
             bitrate: 2000000,
             altGroup: 1,
             m2tsPacketSize: 188,
