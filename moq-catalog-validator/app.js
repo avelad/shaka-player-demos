@@ -644,22 +644,32 @@
     }
 
     // 5. Codec and media descriptors.
-    const mediaPackaging = packaging === 'loc' || packaging === 'cmaf' || packaging === 'locmaf';
+    //
+    // The MSF codec, bitrate, samplerate, channelConfig and width/height rules
+    // are conditioned on the track carrying media, not on "loc" packaging: the
+    // mention of LOC in the codec definition only names the registry the string
+    // comes from. MSF-TS inherits every MSF requirement that is not explicitly
+    // overridden, so m2ts tracks are held to the same rules -- a player needs
+    // them to initialise a decoder and to run ABR across alternate renditions.
+    const mediaPackaging = packaging === 'loc' || packaging === 'cmaf' ||
+        packaging === 'locmaf' || packaging === 'm2ts';
+    const m2tsHint = 'The MSF-TS examples omit it, but a subscriber needs the codec to select a rendition ' +
+        'and initialise a decoder before it has parsed the PMT. Use an RFC 6381 / WebCodecs codec string ' +
+        'describing the elementary streams, e.g. "avc1.640028".';
     if (track.codec === undefined && (audio || video || (mediaPackaging && !timeline))) {
       if (mediaPackaging) {
         report.error(path, 'Missing conditionally required field "codec". It MUST be specified for tracks ' +
             'which have an inherent codec, such as audio and video tracks.',
             msfRef(profile, '5.1.24', '5.2.18'),
-            'For LOC content use the WebCodecs codec registry strings, e.g. "opus" or "av01.0.08M.10".');
-      } else if (packaging !== 'm2ts') {
+            packaging === 'm2ts'
+              ? m2tsHint
+              : 'For LOC content use the WebCodecs codec registry strings, e.g. "opus" or "av01.0.08M.10".');
+      } else {
         report.warn(path, 'Field "codec" is absent on what looks like a media track.',
             msfRef(profile, '5.1.24', '5.2.18'));
       }
     }
-    // MSF-TS states that MSF requirements conditioned on "loc" packaging do not
-    // apply to m2ts tracks, whose elementary streams are described by the PMT.
-    const describesElementaryStreams = packaging !== 'm2ts';
-    if (audio && describesElementaryStreams) {
+    if (audio) {
       if (track.samplerate === undefined) {
         report.error(path, 'Missing conditionally required field "samplerate". It MUST accompany tracks ' +
             'for which audio codecs are specified.', msfRef(profile, '5.1.31', '5.2.28'));
@@ -669,17 +679,20 @@
             'for which audio codecs are specified.', msfRef(profile, '5.1.32', '5.2.29'));
       }
     }
-    if (video && describesElementaryStreams) {
+    if (video) {
       if (track.width === undefined || track.height === undefined) {
         report.warn(path, 'Fields "width"/"height" SHOULD accompany tracks which have a visual representation.',
-            msfRef(profile, '5.1.29', '5.2.26'));
+            msfRef(profile, '5.1.29', '5.2.26'),
+            packaging === 'm2ts'
+              ? 'Without them a subscriber cannot size its renderer or pick a rendition that fits the display.'
+              : undefined);
       }
       if (track.framerate === undefined) {
         report.info(path, 'Optional field "framerate" is absent on a video track.',
             msfRef(profile, '5.1.26', '5.2.20'));
       }
     }
-    if ((audio || video) && describesElementaryStreams && track.bitrate === undefined) {
+    if ((audio || video) && track.bitrate === undefined) {
       if (profile.version === 1) {
         report.error(path, 'Missing conditionally required field "bitrate". It MUST be specified for audio ' +
             'and video tracks.', ref('msf-01', '5.2.22'));
@@ -1232,7 +1245,15 @@
       }
     });
 
-    // CMAF switching sets: several video renditions with no altGroup is suspicious.
+    // Alternate renditions: several video tracks with no altGroup is suspicious.
+    const m2tsVideo = catalog.tracks.filter(function(track) {
+      return isPlainObject(track) && track.packaging === 'm2ts' && isVideoTrack(track);
+    });
+    if (m2tsVideo.length > 1 && m2tsVideo.every(function(track) { return track.altGroup === undefined; })) {
+      report.warn('tracks', 'Several m2ts video tracks are declared but none carries an "altGroup" key. ' +
+          'Alternate renditions of the same content belong to a common alternate group so that a subscriber ' +
+          'can switch between them.', ref('msfts', '7.5'));
+    }
     const cmafVideo = catalog.tracks.filter(function(track) {
       return isPlainObject(track) && (track.packaging === 'cmaf' || track.packaging === 'locmaf') &&
           isVideoTrack(track);
@@ -1552,7 +1573,7 @@
       },
     },
     {
-      name: 'MSF-TS - MPEG-2 TS packaging',
+      name: 'MSF-TS - MPEG-2 TS (draft example, no codec)',
       catalog: {
         version: 1,
         generatedAt: 1746104606044,
@@ -1571,6 +1592,59 @@
             m2tsProgramNumber: 1,
             m2tsPmtPid: 256,
             m2tsPcrPid: 257,
+            m2tsPsiInterval: 100,
+            m2tsRandomAccess: true,
+          },
+        ],
+      },
+    },
+    {
+      name: 'MSF-TS - MPEG-2 TS ABR renditions',
+      catalog: {
+        version: 1,
+        generatedAt: 1746104606044,
+        tracks: [
+          {
+            name: 'video-high',
+            namespace: 'live.example.com/channel/1',
+            packaging: 'm2ts',
+            isLive: true,
+            targetLatency: 1000,
+            role: 'video',
+            mimeType: 'video/mp2t',
+            codec: 'avc1.640028',
+            width: 1920,
+            height: 1080,
+            framerate: 25,
+            bitrate: 6000000,
+            altGroup: 1,
+            m2tsPacketSize: 188,
+            m2tsPacketsPerObject: 64,
+            m2tsProgramNumber: 1,
+            m2tsPmtPid: 256,
+            m2tsPcrPid: 257,
+            m2tsPsiInterval: 100,
+            m2tsRandomAccess: true,
+          },
+          {
+            name: 'video-low',
+            namespace: 'live.example.com/channel/1',
+            packaging: 'm2ts',
+            isLive: true,
+            targetLatency: 1000,
+            role: 'video',
+            mimeType: 'video/mp2t',
+            codec: 'avc1.64001e',
+            width: 960,
+            height: 540,
+            framerate: 25,
+            bitrate: 2000000,
+            altGroup: 1,
+            m2tsPacketSize: 188,
+            m2tsPacketsPerObject: 64,
+            m2tsProgramNumber: 1,
+            m2tsPmtPid: 512,
+            m2tsPcrPid: 513,
             m2tsPsiInterval: 100,
             m2tsRandomAccess: true,
           },
