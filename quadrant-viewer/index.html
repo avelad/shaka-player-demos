@@ -134,8 +134,7 @@
     </div>
 
     <script>
-        const manifestUri = 'https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest.mpd';
-        const axDrmToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJzaW9uIjoxLCJjb21fa2V5X2lkIjoiYjMzNjRlYjUtNTFmNi00YWUzLThjOTgtMzNjZWQ1ZTMxYzc4IiwibWVzc2FnZSI6eyJ0eXBlIjoiZW50aXRsZW1lbnRfbWVzc2FnZSIsImtleXMiOlt7ImlkIjoiOWViNDA1MGQtZTQ0Yi00ODAyLTkzMmUtMjdkNzUwODNlMjY2IiwiZW5jcnlwdGVkX2tleSI6ImxLM09qSExZVzI0Y3Iya3RSNzRmbnc9PSJ9XX19.4lWwW46k-oWcah8oN18LPj5OLS5ZU-_AQv7fe0JhNjA';
+        const manifestUri = 'https://livesim2.dashif.org/livesim2/drm_EZDRM-1-key-cbcs/testpic_2s/Manifest.mpd';
 
         const video = document.getElementById('video');
         const videoContainer = document.getElementById('video-container');
@@ -167,28 +166,6 @@
 
             // Listen for error events
             player.addEventListener('error', onErrorEvent);
-
-            // Configure Multi-DRM (Widevine and PlayReady)
-            player.configure({
-                drm: {
-                    servers: {
-                        'com.widevine.alpha': 'https://drm-widevine-licensing.axtest.net/AcquireLicense',
-                        'com.microsoft.playready': 'https://drm-playready-licensing.axtest.net/AcquireLicense'
-                    },
-                    advanced: {
-                        'com.widevine.alpha': {
-                            headers: {
-                                'X-AxDRM-Message': axDrmToken
-                            }
-                        },
-                        'com.microsoft.playready': {
-                            headers: {
-                                'X-AxDRM-Message': axDrmToken
-                            }
-                        }
-                    }
-                }
-            });
 
             try {
                 // Load Multi-DRM DASH manifest
