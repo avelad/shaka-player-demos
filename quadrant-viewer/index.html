@@ -159,6 +159,10 @@
             } else {
                 console.error('Browser does not support Shaka Player.');
             }
+
+            if (!document.fullscreenEnabled) {
+                btnFullscreen.remove();
+            }
         }
 
         async function initPlayer() {
@@ -224,19 +228,11 @@
                 // Enter fullscreen on the container element to retain CSS quadrant scaling
                 if (videoContainer.requestFullscreen) {
                     videoContainer.requestFullscreen();
-                } else if (videoContainer.webkitRequestFullscreen) { /* Safari */
-                    videoContainer.webkitRequestFullscreen();
-                } else if (videoContainer.msRequestFullscreen) { /* IE11 */
-                    videoContainer.msRequestFullscreen();
                 }
             } else {
                 // Exit fullscreen
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
                 }
             }
         }
