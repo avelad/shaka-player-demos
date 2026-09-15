@@ -1,0 +1,288 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shaka Player - Multi-DRM Quadrant Viewer</title>
+    <!-- Shaka Player Compiled Library (without UI) -->
+    <script src="https://shaka-project.github.io/shaka-player/dist/shaka-player.compiled.js"></script><!DOCTYPE html>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .player-wrapper {
+            width: 100%;
+            max-width: 960px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Container for managing Fullscreen background and alignment */
+        .video-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Container enforcing exact 16:9 aspect ratio and clipping cropped views */
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            background-color: #000000;
+        }
+
+        /* Video element without native controls */
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: fill; /* Fills wrapper while wrapper enforces true aspect ratio */
+            transition: transform 0.3s ease-out;
+            transform-origin: center center;
+        }
+
+        /* Fullscreen styles preserving aspect ratio without distortion */
+        .video-container:fullscreen {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
+        }
+
+        .video-container:fullscreen .video-wrapper {
+            max-width: 100vw;
+            max-height: 100vh;
+            width: min(100vw, calc(100vh * (16 / 9)));
+            height: min(100vh, calc(100vw * (9 / 16)));
+        }
+
+        /* Control buttons bar at the bottom */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
+
+        button {
+            background-color: #1e88e5;
+            color: #ffffff;
+            border: none;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: #1565c0;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.active {
+            background-color: #0d47a1;
+            box-shadow: 0 0 0 2px #90caf9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="player-wrapper">
+        <!-- Main video container -->
+        <div id="video-container" class="video-container">
+            <div class="video-wrapper">
+                <!-- Video element with no controls -->
+                <video id="video" autoplay muted playsinline></video>
+            </div>
+        </div>
+
+        <!-- 6 Action buttons at the bottom -->
+        <div class="controls">
+            <button id="btn-fullscreen">Fullscreen</button>
+            <button id="btn-full-layout" class="active">Full Layout</button>
+            <button id="btn-q1">1st Quadrant</button>
+            <button id="btn-q2">2nd Quadrant</button>
+            <button id="btn-q3">3rd Quadrant</button>
+            <button id="btn-q4">4th Quadrant</button>
+        </div>
+    </div>
+
+    <script>
+        const manifestUri = 'https://media.axprod.net/TestVectors/v7-MultiDRM-SingleKey/Manifest.mpd';
+        const axDrmToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2ZXJzaW9uIjoxLCJjb21fa2V5X2lkIjoiYjMzNjRlYjUtNTFmNi00YWUzLThjOTgtMzNjZWQ1ZTMxYzc4IiwibWVzc2FnZSI6eyJ0eXBlIjoiZW50aXRsZW1lbnRfbWVzc2FnZSIsImtleXMiOlt7ImlkIjoiOWViNDA1MGQtZTQ0Yi00ODAyLTkzMmUtMjdkNzUwODNlMjY2IiwiZW5jcnlwdGVkX2tleSI6ImxLM09qSExZVzI0Y3Iya3RSNzRmbnc9PSJ9XX19.4lWwW46k-oWcah8oN18LPj5OLS5ZU-_AQv7fe0JhNjA';
+
+        const video = document.getElementById('video');
+        const videoContainer = document.getElementById('video-container');
+
+        // Buttons
+        const btnFullscreen = document.getElementById('btn-fullscreen');
+        const btnFullLayout = document.getElementById('btn-full-layout');
+        const btnQ1 = document.getElementById('btn-q1');
+        const btnQ2 = document.getElementById('btn-q2');
+        const btnQ3 = document.getElementById('btn-q3');
+        const btnQ4 = document.getElementById('btn-q4');
+
+        const layoutButtons = [btnFullLayout, btnQ1, btnQ2, btnQ3, btnQ4];
+
+        // Initialize Shaka Player
+        async function initApp() {
+            // Install built-in polyfills to patch browser incompatibilities
+            shaka.polyfill.installAll();
+
+            if (shaka.Player.isBrowserSupported()) {
+                initPlayer();
+            } else {
+                console.error('Browser does not support Shaka Player.');
+            }
+        }
+
+        async function initPlayer() {
+            const player = new shaka.Player();
+
+            // Listen for error events
+            player.addEventListener('error', onErrorEvent);
+
+            // Configure Multi-DRM (Widevine and PlayReady)
+            player.configure({
+                drm: {
+                    servers: {
+                        'com.widevine.alpha': 'https://drm-widevine-licensing.axtest.net/AcquireLicense',
+                        'com.microsoft.playready': 'https://drm-playready-licensing.axtest.net/AcquireLicense'
+                    },
+                    advanced: {
+                        'com.widevine.alpha': {
+                            headers: {
+                                'X-AxDRM-Message': axDrmToken
+                            }
+                        },
+                        'com.microsoft.playready': {
+                            headers: {
+                                'X-AxDRM-Message': axDrmToken
+                            }
+                        }
+                    }
+                }
+            });
+
+            try {
+                // Load Multi-DRM DASH manifest
+                await player.attach(video);
+                await player.load(manifestUri);
+                console.log('Multi-DRM DASH manifest loaded successfully!');
+            } catch (error) {
+                onError(error);
+            }
+        }
+
+        function onErrorEvent(event) {
+            onError(event.detail);
+        }
+
+        function onError(error) {
+            console.error('Shaka Player Error Code:', error.code, 'Object:', error);
+        }
+
+        // Viewport and Zoom Modes
+        // Scaling by 2x allows displaying one exact quadrant from a 2x2 grid
+        function setViewMode(mode, selectedBtn) {
+            switch (mode) {
+                case 'full':
+                    video.style.transform = 'scale(1)';
+                    video.style.transformOrigin = 'center center';
+                    break;
+                case 'q1': // Top-Left quadrant
+                    video.style.transform = 'scale(2)';
+                    video.style.transformOrigin = '0% 0%';
+                    break;
+                case 'q2': // Top-Right quadrant
+                    video.style.transform = 'scale(2)';
+                    video.style.transformOrigin = '100% 0%';
+                    break;
+                case 'q3': // Bottom-Left quadrant
+                    video.style.transform = 'scale(2)';
+                    video.style.transformOrigin = '0% 100%';
+                    break;
+                case 'q4': // Bottom-Right quadrant
+                    video.style.transform = 'scale(2)';
+                    video.style.transformOrigin = '100% 100%';
+                    break;
+            }
+
+            // Update active state class on layout buttons
+            layoutButtons.forEach(btn => btn.classList.remove('active'));
+            if (selectedBtn) {
+                selectedBtn.classList.add('active');
+            }
+        }
+
+        // Fullscreen Toggle Logic
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                // Enter fullscreen on the container element to retain CSS quadrant scaling
+                if (videoContainer.requestFullscreen) {
+                    videoContainer.requestFullscreen();
+                } else if (videoContainer.webkitRequestFullscreen) { /* Safari */
+                    videoContainer.webkitRequestFullscreen();
+                } else if (videoContainer.msRequestFullscreen) { /* IE11 */
+                    videoContainer.msRequestFullscreen();
+                }
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        }
+
+        // Sync Fullscreen button label when entering/exiting fullscreen mode
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                btnFullscreen.textContent = 'Exit Fullscreen';
+            } else {
+                btnFullscreen.textContent = 'Fullscreen';
+            }
+        });
+
+        // Event Listeners for Buttons
+        btnFullscreen.addEventListener('click', toggleFullscreen);
+        btnFullLayout.addEventListener('click', () => setViewMode('full', btnFullLayout));
+        btnQ1.addEventListener('click', () => setViewMode('q1', btnQ1));
+        btnQ2.addEventListener('click', () => setViewMode('q2', btnQ2));
+        btnQ3.addEventListener('click', () => setViewMode('q3', btnQ3));
+        btnQ4.addEventListener('click', () => setViewMode('q4', btnQ4));
+
+        // Start Shaka Player on page load
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
